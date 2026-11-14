@@ -20,7 +20,7 @@ const DEMO_PASSWORD = process.env.DEMO_PASSWORD || 'Hospital@123';
 const seedDatabase = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/hospital_management';
-    console.log(`[Seeder] Connecting to MongoDB: ${mongoUri}`);
+    console.log('[Seeder] Connecting to MongoDB...');
     await mongoose.connect(mongoUri);
 
     console.log('[Seeder] Purging existing database collections for clean repeatable seed...');
@@ -531,7 +531,7 @@ const seedDatabase = async () => {
     console.log('\n======================================================');
     console.log('✅ DATABASE SEEDING COMPLETED SUCCESSFULLY!');
     console.log('======================================================');
-    console.log('DEMO ACCOUNTS (Password for all: ' + DEMO_PASSWORD + ')');
+    console.log('DEMO ACCOUNTS (Password configured via environment variable)');
     console.log('1. Admin:      admin@hospital.demo       (Full Administrative Access)');
     console.log('2. Doctor:     doctor@hospital.demo      (Clinical Workspace & Records)');
     console.log('3. Doctor:     doctor.neuro@hospital.demo(Neurologist Workspace)');
