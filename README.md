@@ -1,4 +1,4 @@
-# MedPulse - Enterprise Hospital Management System
+# MedPulse - Hospital Management System
 **Organization**: ALGIONS AI LABS PRIVATE LIMITED | Full-Stack Web Development Individual Assessment  
 **Author**: Antigravity Senior Full-Stack Software Engineer & UI/UX Architect
 
