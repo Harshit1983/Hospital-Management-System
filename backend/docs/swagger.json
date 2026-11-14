@@ -1,0 +1,220 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hospital Management System REST API",
+    "version": "1.0.0",
+    "description": "Production REST API for Algions AI Labs Hospital Management Assessment. Implements strict RBAC, atomic anti-double booking, protected clinical records, simulated payments, and compliance audit trails.",
+    "contact": {
+      "name": "Antigravity Engineering",
+      "email": "support@hospital.demo"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "StandardResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Operation completed successfully" },
+          "data": { "type": "object" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "Validation failed" },
+          "errors": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "admin@hospital.demo" },
+          "password": { "type": "string", "example": "Hospital@123" }
+        }
+      },
+      "Patient": {
+        "type": "object",
+        "properties": {
+          "patientId": { "type": "string", "example": "PAT-2026-0001" },
+          "name": { "type": "string", "example": "Eleanor Vance" },
+          "dateOfBirth": { "type": "string", "format": "date", "example": "1988-06-15" },
+          "gender": { "type": "string", "enum": ["MALE", "FEMALE", "OTHER"], "example": "FEMALE" },
+          "phone": { "type": "string", "example": "+1-555-0192" },
+          "email": { "type": "string", "example": "eleanor@example.com" }
+        }
+      },
+      "AppointmentBookingRequest": {
+        "type": "object",
+        "required": ["patientId", "doctorId", "departmentId", "appointmentDate", "startTime", "endTime", "reason"],
+        "properties": {
+          "patientId": { "type": "string", "example": "60d0fe4f5311236168a109ca" },
+          "doctorId": { "type": "string", "example": "60d0fe4f5311236168a109cb" },
+          "departmentId": { "type": "string", "example": "60d0fe4f5311236168a109cc" },
+          "appointmentDate": { "type": "string", "format": "date", "example": "2026-11-20" },
+          "startTime": { "type": "string", "example": "09:30" },
+          "endTime": { "type": "string", "example": "10:00" },
+          "reason": { "type": "string", "example": "Routine cardiovascular consultation" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Authenticate user credentials & issue JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Authenticated successfully" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get authenticated user profile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Current user profile" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/patients": {
+      "get": {
+        "tags": ["Patients"],
+        "summary": "Search & list patients with pagination",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Patient list" } }
+      },
+      "post": {
+        "tags": ["Patients"],
+        "summary": "Register a new patient",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "201": { "description": "Patient registered" } }
+      }
+    },
+    "/api/appointments/slots": {
+      "get": {
+        "tags": ["Appointments"],
+        "summary": "Retrieve available doctor appointment time slots",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "doctorId", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "date", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Available slots" } }
+      }
+    },
+    "/api/appointments": {
+      "post": {
+        "tags": ["Appointments"],
+        "summary": "Atomic booking with anti-double-booking protection",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/AppointmentBookingRequest" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Appointment booked" },
+          "409": { "description": "Slot occupied or concurrent conflict prevented" }
+        }
+      }
+    },
+    "/api/invoices": {
+      "post": {
+        "tags": ["Billing"],
+        "summary": "Create itemized invoice with verified subtotal, tax, and discount",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "201": { "description": "Invoice created" } }
+      }
+    },
+    "/api/payments": {
+      "post": {
+        "tags": ["Billing"],
+        "summary": "Record simulated payment with idempotency key",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "201": { "description": "Payment recorded" } }
+      }
+    },
+    "/api/dashboard/stats": {
+      "get": {
+        "tags": ["Dashboard & Reports"],
+        "summary": "Real-time aggregated hospital KPIs",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Live metrics" } }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["User Management"],
+        "summary": "Admin view all users with statistics, role & status filtering, pagination",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Users list and statistics" } }
+      },
+      "post": {
+        "tags": ["User Management"],
+        "summary": "Admin create a new user with role and optional doctor profile linking",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "201": { "description": "User created" } }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["User Management"],
+        "summary": "Get user details by ID",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "User details" } }
+      },
+      "put": {
+        "tags": ["User Management"],
+        "summary": "Update user details, role, or password with last active admin guard",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "User updated" } }
+      }
+    },
+    "/api/users/{id}/status": {
+      "patch": {
+        "tags": ["User Management"],
+        "summary": "Activate/deactivate user account with last active admin guard",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Status updated" } }
+      }
+    },
+    "/api/audit-logs": {
+      "get": {
+        "tags": ["Audit Logs"],
+        "summary": "Administrator compliance audit logs",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Audit trails" } }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,22 @@
+{
+  "name": "hospital-management-system",
+  "version": "1.0.0",
+  "description": "Enterprise Hospital Management System - Algions AI Labs Assessment",
+  "scripts": {
+    "mongo": "\"C:\\Program Files\\MongoDB\\Server\\8.2\\bin\\mongod.exe\" --dbpath .mongo_data --wiredTigerCacheSizeGB 0.5",
+    "install:backend": "npm --prefix backend install",
+    "install:frontend": "npm --prefix frontend install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "seed": "npm --prefix backend run seed",
+    "test": "npm --prefix backend test",
+    "backend": "npm --prefix backend run dev",
+    "frontend": "npm --prefix frontend run dev"
+  },
+  "keywords": [
+    "hospital",
+    "management",
+    "fullstack"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "ISC"
+}
