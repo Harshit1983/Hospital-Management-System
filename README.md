@@ -194,7 +194,7 @@ Ensure `backend/.env` exists (copied from `.env.example`):
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb://127.0.0.1:27017/hospital_management
-JWT_SECRET=super_secure_hospital_jwt_secret_key_2026_algions
+JWT_SECRET=your_jwt_secret_here
 JWT_EXPIRES_IN=24h
 DEMO_PASSWORD=Hospital@123
 CORS_ORIGIN=http://localhost:5173
