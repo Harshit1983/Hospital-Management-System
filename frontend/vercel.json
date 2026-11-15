@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://hospital-management-system-5mh3.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
